@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sqlite3
+import os
+import glob
+import argparse
+import sys
+import re
+from cleanslate import NSFW
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
+
+def display(query_dump):
+    width = 50
+    print "+"*100
+    base = "+       BASE_URL"  
+    print base + " "*(width-len(base)) + " + " + "***TITLE***"
+    print "+"*100
+    idx = 0
+    for url,title in query_dump:
+        if re.match(r'^https?://.*',url):
+            idx += 1
+            #https://stackoverflow.com/questions/20098739/match-base-url-regex
+            base_url = str(idx) + " "*(8-len(str(idx))) + re.findall(r'^.+?[^\/:](?=[?\/]|$)',url)[0]
+            base_url += " "*(width - len(base_url)) + " + "
+            title_val = ""
+            if title:
+                title = title.encode('utf-8')
+                title_val = unicode(title,errors='replace')[:50] + "....."
+            else:
+                title_val = "***Not Available***"
+            print base_url + title_val
+
+def main(args):
+    USER_HOME = os.path.expanduser('~')
+    keywords = None
+    query_dump = []
+    pidplaces = None #primary key/id for moz_places table
+    #even after clearing history, urls will still autocomplete on address bar because moz_hosts table also save host info
+    pidhosts = None #primary key/id for moz_hosts table
+    try:
+        DB_PATH = glob.glob(USER_HOME+'/.mozilla/firefox/*default/places.sqlite')[0]
+        conn = sqlite3.Connection(DB_PATH)
+        cur = conn.cursor()
+    except Exception as shit:
+        print shit
+        sys.exit(1)
+    if args.everything:
+        cur.execute("DELETE FROM moz_places")
+        cur.execute("DELETE from moz_hosts")
+        conn.commit()
+        conn.close()
+        return None
+    if args.not_safe_for_work:
+        try:
+            keywords = NSFW.URLS
+        except Exception as fuckthis:
+            print fuckthis
+    elif args.keywords:
+        keywords = args.keywords
+    if keywords:
+        pidplaces = set()
+        pidhosts = set()
+        for key in keywords:
+            for ids in cur.execute("SELECT id FROM moz_places WHERE title LIKE'%"+key+"%' OR url LIKE '%"+key+"%'").fetchall():
+                pidplaces.add(ids)
+            for ids in cur.execute("SELECT id FROM moz_hosts WHERE host LIKE'%"+key+"%'").fetchall():
+                pidhosts.add(ids)
+        for id_no in pidplaces:
+            query_dump.append(cur.execute("SELECT url,title FROM moz_places WHERE id=%d"%(id_no)).fetchone())
+        for id_no in pidhosts:
+            query_dump.append((cur.execute("SELECT host FROM moz_hosts WHERE id=%d"%(id_no)).fetchone()[0],"None"))
+            
+    if args.view:
+        if keywords is None:
+            query_dump = cur.execute('SELECT url,title from moz_places').fetchall()
+        display(query_dump)
+    if args.delete:
+        if pidplaces is not None or pidhosts is not None :
+            for id_no in pidplaces:
+                cur.execute("DELETE FROM moz_places where id=%d"%(id_no))
+                conn.commit()
+            for id_no in pidhosts:
+                cur.execute("DELETE FROM moz_hosts where id=%d"%(id_no))
+                conn.commit()
+        print "Done!!!"
+    conn.close()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description = "Say goodbye to your Mozilla History")
+    parser.add_argument('-k','--keywords', nargs='+',help='view only those links or page-titles which matches with keywords')
+    parser.add_argument('-v','--view',action='store_true',help='view your sins')
+    parser.add_argument('-d','--delete',action='store_true',help='to delete history for given args i.e nsfw or keywords')
+    parser.add_argument('-nsfw','--not-safe-for-work',action='store_true',help='view nsfw history')
+    parser.add_argument('-e','--everything',action='store_true',help='baptize yourself')
+    args = parser.parse_args()
+    if args.keywords or args.view or args.delete or args.not_safe_for_work or args.everything:
+        main(args)
+    else:
+        print "see cleanslate --help for usage"
+        sys.exit(0)
