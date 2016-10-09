@@ -28,3 +28,5 @@ optional arguments:
   -e, --everything      baptize yourself
 
 ```
+## Demo
+![demogif](https://i.imgur.com/THeyqIG.gif)
