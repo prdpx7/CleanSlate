@@ -1,7 +1,9 @@
 # CleanSlate
 Delete your mozilla history from terminal
 
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zuck007/chefpy/master/LICENSE)
+Inspired from [this](https://www.reddit.com/r/linux/comments/54prcv/i_made_a_simple_bash_script_that_deletes_only/) reddit post.
+
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zuck007/CleanSlate/master/LICENSE)
 
 ## Installation
 ```
