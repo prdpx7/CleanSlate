@@ -1,8 +1,6 @@
-from setuptools import setup, find_packages
-import os, glob
-
+from setuptools import setup
 setup(name='cleanslate',
-      version='0.1',
+      version='0.2',
       description='Say Goodbye to browser history as you always wanted i.e selectively removing the browsing history',
       url='http://github.com/zuck007/CleanSlate',
       author='Pradeep Khileri',
