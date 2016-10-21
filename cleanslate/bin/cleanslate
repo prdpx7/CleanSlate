@@ -39,7 +39,7 @@ def main(args):
     #even after clearing history, urls will still autocomplete on address bar because moz_hosts table also save host info
     pidhosts = None #primary key/id for moz_hosts table
     try:
-        DB_PATH = glob.glob(USER_HOME+'/.mozilla/firefox/*default/places.sqlite')[0]
+        DB_PATH = glob.glob(USER_HOME+'/.mozilla/firefox/*default*/places.sqlite')[0]
         conn = sqlite3.Connection(DB_PATH)
         cur = conn.cursor()
     except Exception as shit:
