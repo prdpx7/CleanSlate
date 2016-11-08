@@ -1,4 +1,5 @@
-# CleanSlate
+<img src="http://i.imgur.com/W0MXuFT.png?2">
+
 Delete your mozilla history from terminal
 
 Inspired from [this](https://www.reddit.com/r/linux/comments/54prcv/i_made_a_simple_bash_script_that_deletes_only/) reddit post.
