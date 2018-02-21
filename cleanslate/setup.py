@@ -1,8 +1,8 @@
 from setuptools import setup
 setup(name='cleanslate',
-      version='0.21',
+      version='0.23',
       description='Say Goodbye to browser history as you always wanted i.e selectively removing the browsing history',
-      url='http://github.com/zuck007/CleanSlate',
+      url='http://github.com/prdpx7/CleanSlate',
       author='Pradeep Khileri',
       author_email='pradeepchoudhary009@gmail.com',
       license='MIT',
